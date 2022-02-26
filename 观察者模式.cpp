@@ -3,83 +3,65 @@
 #include <list>
 using namespace std;
 /*
-¹Û²ìÕßÄ£Ê½(Observer Pattern):¶¨Òå¶ÔÏóÖ®¼äµÄÒ»ÖÖÒ»¶Ô¶à¹ØÏµ.Ê¹µÃÃ¿µ±
-Ò»¸ö¶ÔÏó×´Ì¬·¢Éú¸Ä±äÊ±.ÆäÏà¹ØÒÀÀµ¶ÔÏó¶¼ÄÜµÃµ½Í¨Öª²¢±»×Ô¶¯¸üĞÂ.
-½ÇÉ«:
-Subject(Ä¿±ê):¿ÉÒÔ±»¶à¸ö¹Û²ìÕß¹Û²ì.Ìá¹©Ò»ÏµÁĞ·½·¨À´Ôö¼ÓÉ¾³ı¹Û²ìÕß.²¢ÇÒÓµÓĞNotify()·½·¨.
-ConcreateSubject(¾ßÌåÄ¿±ê):°üº¬¾­³£·¢Éú¸Ä±äµÄÊı¾İ
-Observer(¹Û²ìÕß):¶¨Òå³éÏó½Ó¿Ú
-ConcreateObserver(¾ßÌå¹Û²ìÕß):ÊµÏÖ³éÏóÀàµÄupdate()·½·¨
-
-*/
-class Object;
-class AbstractObserver //¹Û²ìÕßÌá¹©¸üĞÂ
-{
+è§‚å¯Ÿè€…æ¨¡å¼(Observer Pattern):å®šä¹‰å¯¹è±¡ä¹‹é—´çš„ä¸€ç§ä¸€å¯¹å¤šå…³ç³».ä½¿å¾—æ¯å½“
+ä¸€ä¸ªå¯¹è±¡çŠ¶æ€å‘ç”Ÿæ”¹å˜æ—¶.å…¶ç›¸å…³ä¾èµ–å¯¹è±¡éƒ½èƒ½å¾—åˆ°é€šçŸ¥å¹¶è¢«è‡ªåŠ¨æ›´æ–°.
+è§’è‰²:
+Subject(ç›®æ ‡):å¯ä»¥è¢«å¤šä¸ªè§‚å¯Ÿè€…è§‚å¯Ÿ.æä¾›ä¸€ç³»åˆ—æ–¹æ³•æ¥å¢åŠ åˆ é™¤è§‚å¯Ÿè€….å¹¶ä¸”æ‹¥æœ‰Notify()æ–¹æ³•.
+ConcreateSubject(å…·ä½“ç›®æ ‡):åŒ…å«ç»å¸¸å‘ç”Ÿæ”¹å˜çš„æ•°æ®
+Observer(è§‚å¯Ÿè€…):å®šä¹‰æŠ½è±¡æ¥å£
+ConcreateObserver(å…·ä½“è§‚å¯Ÿè€…):å®ç°æŠ½è±¡ç±»çš„update()æ–¹æ³•
+class AbstractObserver{
 public:
-	virtual void updata()=0;
+	virtual void update() = 0;
 };
 
-class Observer :public AbstractObserver {
+class AbstractObject {
 public:
-	Observer(string str, Object* obj) :name(str), oj(obj) {};
-	void updata();
-	string getName() {
-		return name;
+	virtual void Add(AbstractObserver*) = 0;
+	virtual void Remove(AbstractObserver*) = 0;
+	virtual void Notify() = 0;
+};
+class ObserverA : public AbstractObserver {
+public:
+	
+	void update() {
+		cout << "A stop ..." << endl;
 	}
 private:
-	string name;
-	Object* oj;
+	
 };
-
-class AbstractObject {//Ä¿±ê¶ÔÏóÌá¹©ÔöÉ¾
+class ObserverB : public AbstractObserver {
 public:
-	virtual void Add(Observer* ob) = 0;
-	virtual void Remove(Observer* ob) = 0;
-	virtual void Notify() = 0;
+
+	void update() {
+		cout << "B stop ..." << endl;
+	}
+private:
+
+};
+class ObserverC : public AbstractObserver {
+public:
+
+	void update() {
+		cout << "C stop ..." << endl;
+	}
+private:
+
 };
 
 class Object :public AbstractObject {
 public:
-	void Add(Observer* ob) {
-		ObserverList.push_back(ob);
+	void Add(AbstractObserver* observer) {
+		ObserverList.push_back(observer);
 	}
-	void Remove(Observer* ob) {
-		ObserverList.remove(ob);
-		cout << ob->getName() << " is be removed." << endl;
+	void Remove(AbstractObserver* observer) {
+		ObserverList.remove(observer);
 	}
 	void Notify() {
 		for (auto it = ObserverList.begin(); it != ObserverList.end(); it++) {
-			(*it)->updata();
+			(*it)->update();
 		}
 	}
-	string action;
 private:
-	list<Observer*>ObserverList;
+	list<AbstractObserver*>ObserverList;
 };
-
-void Observer::updata() {
-	cout << name << ":" << oj->action << endl;
-}
-int main(void) {
-	Object* p = new Object();//´´½¨¹Û²ìÄ¿±ê
-
-	/*Ìí¼Ó¹Û²ìÕß*/
-	Observer* s1 = new Observer("ob1", p);
-	Observer* s2 = new Observer("ob2", p);
-	Observer* s3 = new Observer("ob3", p);
-	Observer* s4 = new Observer("ob4", p);
-
-	/*Ìí¼Ó¹Û²ìÕßµ½Ä¿±ê*/
-	p->Add(s1);
-	p->Add(s2);
-	p->Add(s3);
-	p->Add(s4);
-
-	/*²úÉúÊÂ¼ş*/
-	p->action = "first play game";
-	p->Notify();
-	p->Remove(s2);
-	p->action = "second play game";
-	p->Notify();
-	return 0;
-}
